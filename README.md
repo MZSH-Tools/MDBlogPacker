@@ -16,26 +16,27 @@
 - 支持前缀/后缀模板文件（版权声明、防转载提示等）
 - 网络图片和已是 Base64 的保持不动
 
+## 安装
+
+```bash
+# 用 environment.yml 创建 conda 环境
+conda env create -f environment.yml
+```
+
 ## 使用
 
 ```bash
 # 最常用：转换 + 复制到剪贴板
-python Main.py 博客.md -c
+conda run -n MDBlogPacker python Main.py 博客.md -c
 
 # 带版权前后缀
-python Main.py 博客.md -c -p 前缀.md -s 后缀.md
+conda run -n MDBlogPacker python Main.py 博客.md -c -p 前缀.md -s 后缀.md
 
 # 输出到文件（不走剪贴板）
-python Main.py 博客.md -o 博客-内嵌版.md
+conda run -n MDBlogPacker python Main.py 博客.md -o 博客-内嵌版.md
 
 # 查看详细转换日志
-python Main.py 博客.md -c -v
-```
-
-## 安装
-
-```bash
-pip install -r requirements.txt
+conda run -n MDBlogPacker python Main.py 博客.md -c -v
 ```
 
 ## 参数
