@@ -2,7 +2,41 @@
 
 入口分发：有参数走 CLI（不加载 Qt），无参数启动 GUI。
 """
+import os
+import shutil
 import sys
+import tempfile
+
+
+def _CleanupMeiDirs():
+    """清理 PyInstaller 单文件模式遗留的 _MEI 临时目录（只在打包环境执行）"""
+    if not getattr(sys, "frozen", False):
+        return
+    CurMeiDir = getattr(sys, "_MEIPASS", None)
+    TempDir = tempfile.gettempdir()
+    for Name in os.listdir(TempDir):
+        if not Name.startswith("_MEI"):
+            continue
+        FullPath = os.path.join(TempDir, Name)
+        if CurMeiDir and os.path.normcase(FullPath) == os.path.normcase(CurMeiDir):
+            continue
+        try:
+            shutil.rmtree(FullPath)
+        except Exception:
+            pass
+
+
+def _HideConsoleWhenGui():
+    """打包后、无命令行参数（GUI 模式）时隐藏控制台窗口"""
+    if not getattr(sys, "frozen", False):
+        return
+    if len(sys.argv) > 1:
+        return  # CLI 模式保留控制台
+    try:
+        import ctypes
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+    except Exception:
+        pass
 
 
 def _DispatchCli() -> int:
@@ -100,6 +134,8 @@ def _DispatchGui() -> int:
 
 
 if __name__ == "__main__":
+    _CleanupMeiDirs()
+    _HideConsoleWhenGui()
     if len(sys.argv) > 1:
         sys.exit(_DispatchCli())
     else:
