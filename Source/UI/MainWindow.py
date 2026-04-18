@@ -66,11 +66,13 @@ class MainWindow(QtWidgets.QWidget):
         self.Config.Save()
 
     def _OnBrowse(self):
-        StartDir = ""
+        # 起始目录优先级：输入框里已有路径的父目录 → 当前目录（CWD）
+        StartDir = str(Path.cwd())
         CurPath = self.FilePathEdit.text().strip()
         if CurPath:
-            StartPath = Path(CurPath)
-            StartDir = str(StartPath.parent if StartPath.parent.is_dir() else "")
+            CurParent = Path(CurPath).parent
+            if CurParent.is_dir():
+                StartDir = str(CurParent)
 
         FilePath, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "选择 Markdown 文件", StartDir, "Markdown (*.md);;所有文件 (*)"
