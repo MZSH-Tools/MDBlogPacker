@@ -1,7 +1,15 @@
 """MDBlogPacker 主窗口：选 MD + 填前文/后文 → 转换并复制到剪贴板"""
+import sys
 from pathlib import Path
 
 import pyperclip
+
+
+def _GetExeDir() -> Path:
+    """获取可执行文件所在目录（兼容 PyInstaller 打包与源码运行）"""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    return Path(__file__).resolve().parent.parent.parent
 from PySide2 import QtCore, QtWidgets
 
 from Source.Logic.ConfigManager import ConfigManager
@@ -55,19 +63,20 @@ class MainWindow(QtWidgets.QWidget):
         Layout.addWidget(self.StatusLabel)
 
     def _LoadFromConfig(self):
-        self.FilePathEdit.setText(self.Config.Get("LastMdPath", ""))
+        MdFiles = sorted(_GetExeDir().glob("*.md"))
+        if MdFiles:
+            self.FilePathEdit.setText(str(MdFiles[0]))
         self.PrefixEdit.setPlainText(self.Config.Get("Prefix", ""))
         self.SuffixEdit.setPlainText(self.Config.Get("Suffix", ""))
 
     def _SaveToConfig(self):
-        self.Config.Set("LastMdPath", self.FilePathEdit.text())
         self.Config.Set("Prefix", self.PrefixEdit.toPlainText())
         self.Config.Set("Suffix", self.SuffixEdit.toPlainText())
         self.Config.Save()
 
     def _OnBrowse(self):
-        # 起始目录优先级：输入框里已有路径的父目录 → 当前目录（CWD）
-        StartDir = str(Path.cwd())
+        # 起始目录优先级：输入框里已有路径的父目录 → exe 所在目录
+        StartDir = str(_GetExeDir())
         CurPath = self.FilePathEdit.text().strip()
         if CurPath:
             CurParent = Path(CurPath).parent

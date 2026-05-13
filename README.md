@@ -13,7 +13,7 @@
 - 扫描 Markdown 里所有本地图片（支持 `![](path)` 和 Obsidian `![[image.png]]` 两种语法）
 - 自动转换为 `data:image/...;base64,...` 内嵌格式
 - 结果直接复制到剪贴板，粘贴即发
-- 支持前缀/后缀模板文件（版权声明、防转载提示等）
+- 支持前文/后文（版权声明、防转载提示等，GUI 模式直接填写，CLI 模式指定模板文件）
 - 网络图片和已是 Base64 的保持不动
 
 ## 安装
@@ -24,6 +24,18 @@ conda env create -f environment.yml
 ```
 
 ## 使用
+
+### GUI 模式（推荐）
+
+双击运行 `MDBlogPacker.exe`（或无参数运行 `Main.py`），打开图形界面：
+
+- 自动选中 exe 所在目录下的第一个 `.md` 文件
+- 填写前文/后文（可选，内容会缓存）
+- 点击「转换并复制到剪贴板」，粘贴到博客平台即可
+
+### CLI 模式
+
+带参数运行时进入命令行模式：
 
 ```bash
 # 最常用：转换 + 复制到剪贴板
@@ -39,7 +51,7 @@ conda run -n MDBlogPacker python Main.py 博客.md -o 博客-内嵌版.md
 conda run -n MDBlogPacker python Main.py 博客.md -c -v
 ```
 
-## 参数
+### CLI 参数
 
 | 参数 | 说明 |
 |---|---|
